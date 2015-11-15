@@ -4,6 +4,7 @@
 echo = TRUE
 suppressMessages(library(dplyr))
 library(lattice)
+library(ggplot2)
 ```
 
 ## Loading and preprocessing the data
@@ -76,5 +77,16 @@ sum(is.na(data$steps))
 ```r
 data$weekday <- (data$weekday > 0 & data$weekday < 6)
 data$weekday = factor(data$weekday, labels = c("Weekend", "Weekday"))
-dataGroupedWeekday <- group_by(data, weekday)
+dataGroupedWeekday <- group_by(data, interval, weekday)
+
+stepsPerWeekday <- summarise(dataGroupedWeekday, steps = mean(steps, na.rm = TRUE))
+
+ggplot(stepsPerWeekday, aes(interval, steps)) +
+  geom_line() +
+  facet_grid(weekday ~ .) +
+  theme_bw() +
+  labs(x = "Interval",
+       y = "Number of Average Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 

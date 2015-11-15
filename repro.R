@@ -34,9 +34,15 @@ xyplot(ts(stepsPerInterval$stepsSum), xlab="5-minute intervall", ylab="Steps")
 
 arrange(stepsPerInterval, desc(stepsSum))
 
-data$test <- (data$weekday > 0 & data$weekday < 6)
-data$test = factor(data$test, labels = c("Weekend", "Weekday"))
+data$weekday <- (data$weekday > 0 & data$weekday < 6)
+data$weekday = factor(data$weekday, labels = c("Weekend", "Weekday"))
+dataGroupedWeekday <- group_by(data, interval, weekday)
 
-stepsPerWeekday <- group_by(data, interval, test, steps)
-week <- summarise(dataGroupedWeekday, steps = mean(steps, na.rm = TRUE))
-xyplot(ts(dataGroupedWeekday$steps), xlab="5-minute interval", ylab="averaged across all days")
+stepsPerWeekday <- summarise(dataGroupedWeekday, steps = mean(steps, na.rm = TRUE))
+
+ggplot(stepsPerWeekday, aes(interval, steps)) +
+  geom_line() +
+  facet_grid(weekday ~ .) +
+  theme_bw() +
+  labs(x = "Interval",
+       y = "Number of Average Steps")
