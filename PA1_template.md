@@ -1,6 +1,7 @@
 # Reproducible Research: Peer Assessment 1
 
 ```r
+echo = TRUE
 suppressMessages(library(dplyr))
 library(lattice)
 ```
@@ -10,41 +11,70 @@ library(lattice)
 ```r
 data <- read.csv("./data/activity.csv", sep = ",")
 data$date <- as.Date(data$date)
+data$weekday <- as.POSIXlt(data$date)$wday
 dataGrouped <- group_by(data, date)
-dataSum <- summarise(dataGrouped, stepsSum = sum(steps))
+dataGroupedInt <- group_by(data, interval)
 ```
 
 ## What is mean total number of steps taken per day?
 
 ```r
-histogram( ~ stepsSum,data=dataSum, type="count", xlab="Sum of Steps",
-           ylab="Count", main="Total Number of Steps per Day")
+stepsPerDay <- summarise(dataGrouped, stepsSum = sum(steps, na.rm = TRUE))
+summarise(stepsPerDay, mean(stepsSum), median(stepsSum))
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   mean(stepsSum) median(stepsSum)
+##            (dbl)            (int)
+## 1        9354.23            10395
+```
+
+```r
+histogram( ~ stepsSum,data=stepsPerDay, type="count", xlab="Sum of Steps", ylab="Count", main="Total Number of Steps per Day")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
-```r
-mean(tapply(data$steps,data$date,sum), na.rm=TRUE)
-```
-
-```
-## [1] 10766.19
-```
-
-```r
-median(tapply(data$steps,data$date,sum), na.rm=TRUE)
-```
-
-```
-## [1] 10765
-```
-
 ## What is the average daily activity pattern?
+Timeseries for the steps per Interval
 
+```r
+stepsPerInterval <- summarise(dataGroupedInt, stepsSum = mean(steps, na.rm = TRUE))
+xyplot(ts(stepsPerInterval$stepsSum), xlab="5-minute interval", ylab="averaged across all days")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+Most steps per Intverval
+
+```r
+head(arrange(stepsPerInterval, desc(stepsSum)), 1)
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval stepsSum
+##      (int)    (dbl)
+## 1      835 206.1698
+```
 
 ## Imputing missing values
 
+```r
+sum(is.na(data$steps))
+```
 
+```
+## [1] 2304
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```r
+data$weekday <- (data$weekday > 0 & data$weekday < 6)
+data$weekday = factor(data$weekday, labels = c("Weekend", "Weekday"))
+dataGroupedWeekday <- group_by(data, weekday)
+```
