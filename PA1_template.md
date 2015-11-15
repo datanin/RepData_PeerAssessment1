@@ -71,6 +71,13 @@ sum(is.na(data$steps))
 ```
 ## [1] 2304
 ```
+The recommended strategy is to
+
+* calculate the mean number of steps per day
+* calucalte the mean number of steps per time interval
+* set the missing avg. steps to the mean of the interval before and after the missing one
+
+(Sadly, due to the lag of time, there is no way to implement the Strategy.)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

@@ -106,6 +106,13 @@ xyplot(ts(stepsPerInterval$stepsSum), xlab=&quot;5-minute interval&quot;, ylab=&
 <h2>Imputing missing values</h2>
 <pre class="r"><code>sum(is.na(data$steps))</code></pre>
 <pre><code>## [1] 2304</code></pre>
+<p>The recommended strategy is to</p>
+<ul>
+<li>calculate the mean number of steps per day</li>
+<li>calucalte the mean number of steps per time interval</li>
+<li>set the missing avg. steps to the mean of the interval before and after the missing one</li>
+</ul>
+<p>(Sadly, due to the lag of time, there is no way to implement the Strategy.)</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
